@@ -20,23 +20,12 @@ io.on('connection', socket => {
     console.log(roomId, userId)
     socket.join(roomId)
     socket.broadcast.to(roomId).emit('user-connected', userId)
+    console.log('New User Connected: ' + userId);
 
     socket.on('disconnect', () => {
       socket.broadcast.to(roomId).emit('user-disconnected', userId)
     })
   })
 })
-
-io.on('user-connected', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId)
-    socket.broadcast.to(roomId).emit('user-connected', userId)
-
-    socket.on('disconnect', () => {
-      socket.broadcast.to(roomId).emit('user-disconnected', userId)
-    })
-  })
-})
-
 
 server.listen(3000)
