@@ -1,8 +1,11 @@
 const express = require('express')
+var cors = require('cors')
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
+const { send } = require('process')
+app.use(cors())
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -16,6 +19,12 @@ app.get('/:room', (req, res) => {
 })
 
 io.on('connection', socket => {
+  socket.on('user-updated',(roomId,eventId)=>{
+    socket.broadcast.to(roomId).emit('update-user',eventId);
+  });
+  socket.on('send-message', (roomId,userId) => {
+    socket.broadcast.to(roomId).emit('message', userId);
+  })
   socket.on('join-room', (roomId, userId) => {
     console.log(roomId, userId)
 
@@ -23,11 +32,14 @@ io.on('connection', socket => {
     socket.broadcast.to(roomId).emit('user-connected', userId)
     console.log('New User Connected: ' + userId);
 
+
+    
     socket.on('disconnect', () => {
       console.log(userId,"left room" ,roomId);
       socket.broadcast.to(roomId).emit('user-disconnected', userId)
     })
   })
+  
 })
 
 server.listen(3000)
