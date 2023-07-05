@@ -51,4 +51,4 @@ mongoose.connect('mongodb+srv://gurupalsingh83:1234@cluster0.8twldbp.mongodb.net
 
 });
 
-server.listen(5000)
+server.listen(3000)
