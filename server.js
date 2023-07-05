@@ -6,7 +6,8 @@ const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
 const { send } = require('process')
 app.use(cors())
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
@@ -42,4 +43,12 @@ io.on('connection', socket => {
   
 })
 
-server.listen(3000)
+const mongoose = require('mongoose');
+mongoose.connect('mongodb+srv://gurupalsingh83:1234@cluster0.8twldbp.mongodb.net/db').then(() => {
+    console.log('connected');
+    const userRoutes = require('./peer_routes');
+    app.use('/api/user', userRoutes);
+
+});
+
+server.listen(5000)
